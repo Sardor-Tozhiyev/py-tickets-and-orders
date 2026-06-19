@@ -1,18 +1,18 @@
 from db.models import Ticket
-from db.models import User
+from django.contrib.auth import get_user_model
 from db.models import Order
 
 from django.db import transaction
 from django.db.models import QuerySet
 
 
-@transaction.atomic()
+@transaction.atomic
 def create_order(
     tickets: list[dict],
     username: str,
     date: str = None,
 ) -> Order:
-    user = User.objects.get(username=username)
+    user = get_user_model().objects.get(username=username)
     order = Order.objects.create(user=user)
 
     if date:
@@ -28,7 +28,7 @@ def create_order(
     return order
 
 
-def get_orders(username: str = None) -> QuerySet:
+def get_orders(username: str = None) -> QuerySet[Order]:
     if username:
         return Order.objects.filter(user__username=username)
     return Order.objects.all()
